@@ -16,7 +16,7 @@ class Row:
         self.lst = []
 
     def checkForWin(self):
-        if self.lst[0] == self.lst[1] and self.lst[1] == self.lst[2]:
+        if self.lst[0].sym == self.lst[1].sym and self.lst[1].sym == self.lst[2].sym:
             return True
         else:
             return False
@@ -76,10 +76,14 @@ class PlainGame:
         self.roundNum = 0
         self.winner = None
 
-    def printGrid(self):
-        print('=================================')
+    def printRoundInfo(self):
+        print('===============INFO==============')
         print('Player 1: X\tPlayer 2: O')
         print('Round ' + str(self.roundNum + 1) + ', Player ' + self.getCurrentPlayerNum() + '\'s turn')
+        print('=================================')
+
+    def printGrid(self):
+        print('=================================')
         print('         |         |         ')
         print('    ' + self.grid[0][0].__str__() + '    |    ' + self.grid[0][1].__str__() + '    |    ' + self.grid[0][2].__str__() + '    ')
         print('_________|_________|_________')
@@ -145,8 +149,6 @@ class PlainGame:
             row7Win = self.rows[7].checkForWin()
             return row3Win or row6Win or row7Win
 
-
-
     def update(self, currentGridChoice):
         self.roundNum += 1
         gridList = []
@@ -168,13 +170,19 @@ def isValidGridChoice(choiceStr, grid):
         return False
 
 def displayWinScreen(game):
-    print('End of game!') # Declare winner 
+    print('===========END OF GAME===========') # Declare winner
+    if game.winner is not None:
+        print('The winner is Player ' + game.winner + '!')
+    else:
+        print('The game is a draw!')
     game.printGrid()
+    print('=================================')
 
 def runWithoutGraphics():
     print('Tic-Tac-Toe without graphics is starting, enjoy!')
     currentGame = PlainGame()
     for i in range(9):
+        currentGame.printRoundInfo()
         currentGame.printGrid()
         while True:
             playerGridChoice = input('Player ' + str(((currentGame.roundNum%2)+1)) + ', pick a number.\n')
@@ -183,6 +191,7 @@ def runWithoutGraphics():
             print('Invalid choice, please pick an available number.')
         currentGame.update(playerGridChoice)
         if currentGame.hasAWin(playerGridChoice):
+            currentGame.winner = currentGame.getCurrentPlayerNum()
             break
     displayWinScreen(currentGame)
 

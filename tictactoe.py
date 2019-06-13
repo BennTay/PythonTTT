@@ -11,19 +11,68 @@ class Grid:
     def __str__(self):
         return str(self.sym)
 
+class Row:
+    def __init__(self):
+        self.lst = []
+
+    def checkForWin(self):
+        if self.lst[0] == self.lst[1] and self.lst[1] == self.lst[2]:
+            return True
+        else:
+            return False
+
 class PlainGame:
     def __init__(self):
-        """
-        self.grid = [['1', '2', '3'], 
-        ['4', '5', '6'], 
-        ['7', '8', '9']]
-        """
         self.grid = [[], [], []]
         num = 1
         for i in range(3):
             for j in range(3):
                 self.grid[i].append(Grid(str(num)))
                 num += 1
+        self.rows = {}
+        for i in range(8):
+            self.rows[i+1] = Row()
+
+        # Top horizontal row, row 1
+        self.rows[1].lst.append(self.grid[0][0])
+        self.rows[1].lst.append(self.grid[0][1])
+        self.rows[1].lst.append(self.grid[0][2])
+
+        # Middle horizontal row, row 2
+        self.rows[2].lst.append(self.grid[1][0])
+        self.rows[2].lst.append(self.grid[1][1])
+        self.rows[2].lst.append(self.grid[1][2])
+
+        # Bottom horizontal row, row 3
+        self.rows[3].lst.append(self.grid[2][0])
+        self.rows[3].lst.append(self.grid[2][1])
+        self.rows[3].lst.append(self.grid[2][2])
+
+        # Left vertical row, row 4
+        self.rows[4].lst.append(self.grid[0][0])
+        self.rows[4].lst.append(self.grid[1][0])
+        self.rows[4].lst.append(self.grid[2][0])
+
+        # Middle vertical row, row 5
+        self.rows[5].lst.append(self.grid[0][1])
+        self.rows[5].lst.append(self.grid[1][1])
+        self.rows[5].lst.append(self.grid[2][1])
+
+        # Right vertical row, row 6
+        self.rows[6].lst.append(self.grid[0][2])
+        self.rows[6].lst.append(self.grid[1][2])
+        self.rows[6].lst.append(self.grid[2][2])
+
+        # Top-left to bottom-right diagonal row, row 7
+        self.rows[7].lst.append(self.grid[0][0])
+        self.rows[7].lst.append(self.grid[1][1])
+        self.rows[7].lst.append(self.grid[2][2])
+
+        # Top-right to bottom-left diagonal row, row 8
+        self.rows[8].lst.append(self.grid[0][2])
+        self.rows[8].lst.append(self.grid[1][1])
+        self.rows[8].lst.append(self.grid[2][0])
+
         self.roundNum = 0
         self.winner = None
 
@@ -51,9 +100,52 @@ class PlainGame:
         else:
             return 'O'
 
-    def checkForWin(self):
-        print('checking for win')
-        # use recursion to check horizontal, vertical and diagonal for 3 in a row
+    def hasAWin(self, currentGridChoice):
+        gridNum = int(currentGridChoice)
+        if gridNum == 1:
+            row1Win = self.rows[1].checkForWin()
+            row4Win = self.rows[4].checkForWin()
+            row7Win = self.rows[7].checkForWin()
+            return row1Win or row4Win or row7Win
+        elif gridNum == 2:
+            row1Win = self.rows[1].checkForWin()
+            row5Win = self.rows[5].checkForWin()
+            return row1Win or row5Win
+        elif gridNum == 3:
+            row1Win = self.rows[1].checkForWin()
+            row6Win = self.rows[6].checkForWin()
+            row8Win = self.rows[8].checkForWin()
+            return row1Win or row6Win or row8Win
+        elif gridNum == 4:
+            row2Win = self.rows[2].checkForWin()
+            row4Win = self.rows[4].checkForWin()
+            return row2Win or row4Win
+        elif gridNum == 5:
+            row2Win = self.rows[2].checkForWin()
+            row5Win = self.rows[5].checkForWin()
+            row7Win = self.rows[7].checkForWin()
+            row8Win = self.rows[8].checkForWin()
+            return row2Win or row5Win or row7Win or row8Win
+        elif gridNum == 6:
+            row2Win = self.rows[2].checkForWin()
+            row6Win = self.rows[6].checkForWin()
+            return row2Win or row6Win
+        elif gridNum == 7:
+            row3Win = self.rows[3].checkForWin()
+            row4Win = self.rows[4].checkForWin()
+            row8Win = self.rows[8].checkForWin()
+            return row3Win or row4Win or row8Win
+        elif gridNum == 8:
+            row3Win = self.rows[3].checkForWin()
+            row5Win = self.rows[5].checkForWin()
+            return row3Win or row5Win
+        elif gridNum == 9:
+            row3Win = self.rows[3].checkForWin()
+            row6Win = self.rows[6].checkForWin()
+            row7Win = self.rows[7].checkForWin()
+            return row3Win or row6Win or row7Win
+
+
 
     def update(self, currentGridChoice):
         self.roundNum += 1
@@ -90,6 +182,8 @@ def runWithoutGraphics():
                 break
             print('Invalid choice, please pick an available number.')
         currentGame.update(playerGridChoice)
+        if currentGame.hasAWin(playerGridChoice):
+            break
     displayWinScreen(currentGame)
 
 

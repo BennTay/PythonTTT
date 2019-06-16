@@ -1,8 +1,8 @@
 from graphics import *
 
 def runWithGraphics():
-    print('Tic-Tac-Toe with graphics is starting, enjoy!')
-    # Run game with graphics
+    # print('Tic-Tac-Toe with graphics is starting, enjoy!')
+    print('Sorry, this is still a work in progress. Feel free to try without graphics!')
 
 class Grid:
     def __init__(self, sym):
@@ -73,13 +73,13 @@ class PlainGame:
         self.rows[8].lst.append(self.grid[1][1])
         self.rows[8].lst.append(self.grid[2][0])
 
-        self.roundNum = 0
+        self.roundNum = 1
         self.winner = None
 
     def printRoundInfo(self):
         print('===============INFO==============')
         print('Player 1: X\tPlayer 2: O')
-        print('Round ' + str(self.roundNum + 1) + ', Player ' + self.getCurrentPlayerNum() + '\'s turn')
+        print('Round ' + str(self.roundNum) + ', Player ' + self.getCurrentPlayerNum() + '\'s turn')
         print('=================================')
 
     def printGrid(self):
@@ -96,7 +96,10 @@ class PlainGame:
         print('=================================')
 
     def getCurrentPlayerNum(self):
-        return str(((self.roundNum%2)+1))
+        if self.roundNum % 2 == 0:
+            return '2'
+        else:
+            return '1'
 
     def getCurrentToken(self):
         if self.getCurrentPlayerNum() == '1':
@@ -170,7 +173,7 @@ def isValidGridChoice(choiceStr, grid):
         return False
 
 def displayWinScreen(game):
-    print('===========END OF GAME===========') # Declare winner
+    print('===========END OF GAME===========')
     if game.winner is not None:
         print('The winner is Player ' + game.winner + '!')
     else:
@@ -185,10 +188,14 @@ def runWithoutGraphics():
         currentGame.printRoundInfo()
         currentGame.printGrid()
         while True:
-            playerGridChoice = input('Player ' + str(((currentGame.roundNum%2)+1)) + ', pick a number.\n')
-            if isValidGridChoice(playerGridChoice, currentGame.grid):
-                break
-            print('Invalid choice, please pick an available number.')
+            try:
+                playerGridChoice = input('Player ' + str(((currentGame.roundNum%2)+1)) + ', pick a number.\n')
+                if isValidGridChoice(playerGridChoice, currentGame.grid):
+                    break
+                else:
+                    raise ValueError
+            except: # Consider refactoring/restructuring
+                print('Invalid choice, please pick an available number.')
         currentGame.update(playerGridChoice)
         if currentGame.hasAWin(playerGridChoice):
             currentGame.winner = currentGame.getCurrentPlayerNum()
@@ -199,11 +206,14 @@ def runWithoutGraphics():
 def main():
     print('Tic-Tac-Toe is starting...\n')
     while True:
-        choice = input('Would you like to play with graphics?\nY/N\n')
-        if choice.lower() == 'y' or choice.lower() == 'n':
-            break
-        else:
-            print('Sorry, please try again.')
+        try:
+            choice = input('Would you like to play with graphics?\nY/N\n')
+            if choice.lower() != 'y' and choice.lower() != 'n':
+                raise ValueError
+            else:
+                break
+        except:
+            print('Sorry, please enter \'Y\' or \'N\'.')
 
     if choice.lower() == 'y':
         runWithGraphics()

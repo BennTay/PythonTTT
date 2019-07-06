@@ -14,9 +14,32 @@ class GraphicGame:
         self.pointList.append(Point(100, 600))
         self.pointList.append(Point(300, 600))
         self.pointList.append(Point(500, 600))
+        self.textBox = Text(Point(300, 50), "Tic-Tac-Toe has started!")
+        self.textBox.draw(self.window)
+
+    def drawCircle(self, point, window):
+        Circle(point, 50).draw(window)
+
+    def drawCross(self, point, window):
+        x = point.getX()
+        y = point.getY()
+        line1 = Line(Point(x - 50, y - 50), Point(x + 50, y + 50))
+        line2 = Line(Point(x + 50, y - 50), Point(x - 50, y + 50))
+        line1.draw(window)
+        line2.draw(window)
 
     def updateWindow(self, gridNum):
-        self.pointList[int(gridNum) - 1].draw(self.window)
+        token = self.plain_game.getCurrentToken()
+        point = self.pointList[int(gridNum) - 1]
+        #self.pointList[int(gridNum) - 1].draw(self.window)
+        if token == 'X':
+            self.drawCross(point, self.window)
+        else:
+            self.drawCircle(point, self.window)
+
+    def updateText(self, text):
+        self.textBox.setText(text)
+
 
 
 def initializeBoard(window):
@@ -25,13 +48,12 @@ def initializeBoard(window):
     line3 = Line(Point(200, 100), Point(200, 700))
     line4 = Line(Point(400, 100), Point(400, 700))
     topBorder = Line(Point(0, 100), Point(600, 100))
-    textBox = Text(Point(300, 50), "Tic-Tac-Toe has started!")
+    #textBox = Text(Point(300, 50), "Tic-Tac-Toe has started!")
     line1.draw(window)
     line2.draw(window)
     line3.draw(window)
     line4.draw(window)
     topBorder.draw(window)
-    textBox.draw(window)
 
 def translateCoordinatesToGrid(coordinates):
     x = coordinates.getX()
@@ -82,6 +104,7 @@ def runWithGraphics():
                     raise ValueError
             except: # Consider refactoring/restructuring
                 print('Invalid choice, please pick an available number.')
+                currentGame.updateText('Invalid choice, please pick an available grid.')
         currentGame.plain_game.update(playerGridChoice)
         currentGame.updateWindow(playerGridChoice)
         if currentGame.plain_game.hasAWin(playerGridChoice):
